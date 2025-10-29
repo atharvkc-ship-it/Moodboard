@@ -1,0 +1,86 @@
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
+import { LogOut, User, Home, Grid } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+
+export default function Navbar() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  return (
+    <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+      <div className="container">
+        <Link to="/" className="navbar-brand fw-bold">
+          <Grid className="me-2" size={24} />
+          Moodboard
+        </Link>
+
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav me-auto">
+            <li className="nav-item">
+              <Link to="/" className="nav-link">
+                <Home size={18} className="me-1" />
+                Home
+              </Link>
+            </li>
+            {user && (
+              <li className="nav-item">
+                <Link to="/dashboard" className="nav-link">
+                  <Grid size={18} className="me-1" />
+                  My Moodboards
+                </Link>
+              </li>
+            )}
+          </ul>
+
+          <div className="d-flex align-items-center gap-2">
+            {user ? (
+              <>
+                <span className="navbar-text me-2">
+                  <User size={18} className="me-1" />
+                  Welcome, {user.name}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="!bg-transparent !hover:bg-transparent border-white text-white"
+                >
+                  <LogOut size={16} className="me-1" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="outline" size="sm" className="!bg-transparent !hover:bg-transparent border-white text-white me-2">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button variant="secondary" size="sm">
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}
