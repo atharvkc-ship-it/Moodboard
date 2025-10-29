@@ -1,0 +1,173 @@
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useAuth } from '@/hooks/useAuth';
+import { mockMoodboards, STORAGE_KEYS } from '@/lib/supabase';
+import { MoodboardFormData } from '@/lib/validations';
+import Navbar from '@/components/layout/Navbar';
+import MoodboardCard from '@/components/moodboard/MoodboardCard';
+import CreateMoodboard from '@/components/moodboard/CreateMoodboard';
+import { Plus, Grid, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+
+interface Moodboard {
+  id: string;
+  title: string;
+  description: string;
+  userId: string;
+  images: string[];
+  createdAt: string;
+}
+
+export default function Dashboard() {
+  const { user } = useAuth();
+  const [moodboards, setMoodboards] = useState<Moodboard[]>([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [shareAlert, setShareAlert] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Load moodboards from localStorage or use mock data
+    const savedMoodboards = localStorage.getItem(STORAGE_KEYS.MOODBOARDS);
+    if (savedMoodboards) {
+      const parsed = JSON.parse(savedMoodboards);
+      setMoodboards(parsed.filter((mb: Moodboard) => mb.userId === user?.id));
+    } else {
+      // Initialize with mock data for demo
+      const userMoodboards = mockMoodboards.filter(mb => mb.userId === user?.id);
+      setMoodboards(userMoodboards);
+      localStorage.setItem(STORAGE_KEYS.MOODBOARDS, JSON.stringify(mockMoodboards));
+    }
+  }, [user?.id]);
+
+  const saveMoodboards = (updatedMoodboards: Moodboard[]) => {
+    const allMoodboards = JSON.parse(localStorage.getItem(STORAGE_KEYS.MOODBOARDS) || '[]');
+    const otherUserMoodboards = allMoodboards.filter((mb: Moodboard) => mb.userId !== user?.id);
+    const newAllMoodboards = [...otherUserMoodboards, ...updatedMoodboards];
+    localStorage.setItem(STORAGE_KEYS.MOODBOARDS, JSON.stringify(newAllMoodboards));
+    setMoodboards(updatedMoodboards);
+  };
+
+  const handleCreateMoodboard = (data: MoodboardFormData & { images: string[] }) => {
+    const newMoodboard: Moodboard = {
+      id: Date.now().toString(),
+      title: data.title,
+      description: data.description || '',
+      userId: user!.id,
+      images: data.images,
+      createdAt: new Date().toISOString()
+    };
+
+    const updatedMoodboards = [...moodboards, newMoodboard];
+    saveMoodboards(updatedMoodboards);
+  };
+
+  const handleEditMoodboard = (moodboard: Moodboard) => {
+    // For demo purposes, just show an alert
+    alert(`Edit functionality would open editor for: ${moodboard.title}`);
+  };
+
+  const handleDeleteMoodboard = (id: string) => {
+    if (confirm('Are you sure you want to delete this moodboard?')) {
+      const updatedMoodboards = moodboards.filter(mb => mb.id !== id);
+      saveMoodboards(updatedMoodboards);
+    }
+  };
+
+  const handleShareMoodboard = (moodboard: Moodboard) => {
+    const shareUrl = `${window.location.origin}/moodboard/${moodboard.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    setShareAlert(`Share link copied to clipboard: ${shareUrl}`);
+    setTimeout(() => setShareAlert(null), 3000);
+  };
+
+  const filteredMoodboards = moodboards.filter(mb =>
+    mb.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    mb.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (!user) {
+    return <div>Please log in to view your dashboard.</div>;
+  }
+
+  return (
+    <>
+      <Navbar />
+      <div className="container py-4">
+        {shareAlert && (
+          <Alert className="mb-4">
+            <AlertDescription>{shareAlert}</AlertDescription>
+          </Alert>
+        )}
+
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h1 className="h2 mb-1">My Moodboards</h1>
+            <p className="text-muted mb-0">
+              Welcome back, {user.name}! You have {moodboards.length} moodboard{moodboards.length !== 1 ? 's' : ''}.
+            </p>
+          </div>
+          <Button onClick={() => setShowCreateModal(true)}>
+            <Plus className="me-2" size={16} />
+            Create New
+          </Button>
+        </div>
+
+        <div className="row mb-4">
+          <div className="col-md-6">
+            <div className="position-relative">
+              <Search className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" size={16} />
+              <Input
+                type="text"
+                placeholder="Search moodboards..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="ps-5"
+              />
+            </div>
+          </div>
+        </div>
+
+        {filteredMoodboards.length === 0 ? (
+          <div className="text-center py-5">
+            <Grid className="mx-auto mb-3 text-muted" size={64} />
+            <h3 className="h4 text-muted mb-3">
+              {moodboards.length === 0 ? 'No moodboards yet' : 'No moodboards match your search'}
+            </h3>
+            <p className="text-muted mb-4">
+              {moodboards.length === 0 
+                ? 'Create your first moodboard to get started organizing your visual inspiration.'
+                : 'Try adjusting your search terms or create a new moodboard.'
+              }
+            </p>
+            {moodboards.length === 0 && (
+              <Button onClick={() => setShowCreateModal(true)}>
+                <Plus className="me-2" size={16} />
+                Create Your First Moodboard
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="row g-4">
+            {filteredMoodboards.map((moodboard) => (
+              <div key={moodboard.id} className="col-md-6 col-lg-4">
+                <MoodboardCard
+                  moodboard={moodboard}
+                  onEdit={handleEditMoodboard}
+                  onDelete={handleDeleteMoodboard}
+                  onShare={handleShareMoodboard}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        <CreateMoodboard
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSubmit={handleCreateMoodboard}
+        />
+      </div>
+    </>
+  );
+}
