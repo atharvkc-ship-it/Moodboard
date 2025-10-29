@@ -1,0 +1,130 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Edit, Trash2, Share2, Calendar } from 'lucide-react';
+
+interface Moodboard {
+  id: string;
+  title: string;
+  description: string;
+  images: string[];
+  createdAt: string;
+}
+
+interface MoodboardCardProps {
+  moodboard: Moodboard;
+  onEdit: (moodboard: Moodboard) => void;
+  onDelete: (id: string) => void;
+  onShare: (moodboard: Moodboard) => void;
+}
+
+export default function MoodboardCard({ moodboard, onEdit, onDelete, onShare }: MoodboardCardProps) {
+  const previewImages = moodboard.images.slice(0, 4);
+  const remainingCount = moodboard.images.length - 4;
+
+  return (
+    <Card className="h-100 shadow-sm hover:shadow-lg transition-all">
+      <CardHeader className="pb-2">
+        <div className="d-flex justify-content-between align-items-start">
+          <div>
+            <CardTitle className="h5 mb-1">{moodboard.title}</CardTitle>
+            <CardDescription className="small">
+              <Calendar size={12} className="me-1" />
+              {new Date(moodboard.createdAt).toLocaleDateString()}
+            </CardDescription>
+          </div>
+          <div className="dropdown">
+            <Button
+              variant="ghost"
+              size="sm"
+              data-bs-toggle="dropdown"
+              className="p-1"
+            >
+              ⋮
+            </Button>
+            <ul className="dropdown-menu">
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() => onEdit(moodboard)}
+                >
+                  <Edit size={14} className="me-2" />
+                  Edit
+                </button>
+              </li>
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() => onShare(moodboard)}
+                >
+                  <Share2 size={14} className="me-2" />
+                  Share
+                </button>
+              </li>
+              <li><hr className="dropdown-divider" /></li>
+              <li>
+                <button
+                  className="dropdown-item text-danger"
+                  onClick={() => onDelete(moodboard.id)}
+                >
+                  <Trash2 size={14} className="me-2" />
+                  Delete
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent>
+        {moodboard.description && (
+          <p className="text-muted small mb-3">{moodboard.description}</p>
+        )}
+        
+        <div className="row g-1 mb-3">
+          {previewImages.map((image, index) => (
+            <div key={index} className="col-6">
+              <div 
+                className="bg-light rounded position-relative overflow-hidden"
+                style={{ aspectRatio: '1', height: '60px' }}
+              >
+                <img
+                  src={image}
+                  alt={`Preview ${index + 1}`}
+                  className="w-100 h-100 object-fit-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://via.placeholder.com/150x150?text=Image';
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+          {remainingCount > 0 && (
+            <div className="col-6">
+              <div 
+                className="bg-secondary bg-opacity-25 rounded d-flex align-items-center justify-content-center"
+                style={{ aspectRatio: '1', height: '60px' }}
+              >
+                <span className="text-muted small fw-semibold">
+                  +{remainingCount}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="d-flex justify-content-between align-items-center">
+          <span className="badge bg-primary">
+            {moodboard.images.length} {moodboard.images.length === 1 ? 'image' : 'images'}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onEdit(moodboard)}
+          >
+            View Details
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
