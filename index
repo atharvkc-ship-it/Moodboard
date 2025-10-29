@@ -1,0 +1,196 @@
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { useAuth } from '@/hooks/useAuth';
+import { Link } from 'react-router-dom';
+import { Grid, Image, Share2, Users, Palette, Sparkles } from 'lucide-react';
+
+export default function Index() {
+  const { user } = useAuth();
+
+  return (
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 text-white py-5">
+        <div className="container">
+          <div className="row align-items-center min-vh-75">
+            <div className="col-lg-6">
+              <div className="mb-4">
+                <h1 className="display-4 fw-bold mb-4 animate-in fade-in slide-in-from-left duration-700">
+                  Create Beautiful <span className="text-warning">Moodboards</span>
+                </h1>
+                <p className="lead mb-4 animate-in fade-in slide-in-from-left delay-300 duration-700">
+                  Transform your creative ideas into stunning visual collections. 
+                  Organize inspiration, share your vision, and collaborate with others 
+                  in our intuitive moodboard platform.
+                </p>
+                <div className="d-flex gap-3 flex-wrap animate-in fade-in slide-in-from-left delay-500 duration-700">
+                  {user ? (
+                    <Link to="/dashboard">
+                      <Button size="lg" className="btn-warning text-dark fw-semibold">
+                        <Grid className="me-2" size={20} />
+                        Go to Dashboard
+                      </Button>
+                    </Link>
+                  ) : (
+                    <>
+                      <Link to="/register">
+                        <Button size="lg" className="btn-warning text-dark fw-semibold">
+                          <Sparkles className="me-2" size={20} />
+                          Get Started Free
+                        </Button>
+                      </Link>
+                      <Link to="/login">
+                        <Button variant="outline" size="lg" className="!bg-transparent !hover:bg-transparent border-white text-white">
+                          Sign In
+                        </Button>
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="col-lg-6">
+              <div className="text-center animate-in fade-in slide-in-from-right delay-700 duration-700">
+                <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-4 p-4 shadow-lg">
+                  <Grid size={120} className="text-warning mb-3 mx-auto" />
+                  <h3 className="h5 mb-3">Visual Inspiration Hub</h3>
+                  <p className="text-white-50">
+                    Collect, organize, and share your creative ideas in beautiful, 
+                    customizable moodboards that inspire and engage.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-5 bg-light">
+        <div className="container">
+          <div className="text-center mb-5">
+            <h2 className="display-5 fw-bold text-dark mb-3">
+              Everything You Need for Creative Expression
+            </h2>
+            <p className="lead text-muted">
+              Powerful tools designed to bring your creative vision to life
+            </p>
+          </div>
+          
+          <div className="row g-4">
+            <div className="col-md-6 col-lg-3">
+              <Card className="h-100 border-0 shadow-sm hover:shadow-lg transition-all">
+                <CardContent className="p-4 text-center">
+                  <div className="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{width: '60px', height: '60px'}}>
+                    <Image className="text-primary" size={24} />
+                  </div>
+                  <h5 className="fw-semibold mb-2">Easy Image Upload</h5>
+                  <p className="text-muted mb-0">
+                    Drag and drop images or upload from your device to create stunning visual collections.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="col-md-6 col-lg-3">
+              <Card className="h-100 border-0 shadow-sm hover:shadow-lg transition-all">
+                <CardContent className="p-4 text-center">
+                  <div className="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{width: '60px', height: '60px'}}>
+                    <Palette className="text-success" size={24} />
+                  </div>
+                  <h5 className="fw-semibold mb-2">Customizable Layouts</h5>
+                  <p className="text-muted mb-0">
+                    Arrange your images in beautiful grids and layouts that showcase your creative vision.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="col-md-6 col-lg-3">
+              <Card className="h-100 border-0 shadow-sm hover:shadow-lg transition-all">
+                <CardContent className="p-4 text-center">
+                  <div className="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{width: '60px', height: '60px'}}>
+                    <Share2 className="text-warning" size={24} />
+                  </div>
+                  <h5 className="fw-semibold mb-2">Share & Collaborate</h5>
+                  <p className="text-muted mb-0">
+                    Share your moodboards with others and get feedback on your creative projects.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="col-md-6 col-lg-3">
+              <Card className="h-100 border-0 shadow-sm hover:shadow-lg transition-all">
+                <CardContent className="p-4 text-center">
+                  <div className="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{width: '60px', height: '60px'}}>
+                    <Users className="text-info" size={24} />
+                  </div>
+                  <h5 className="fw-semibold mb-2">Team Collaboration</h5>
+                  <p className="text-muted mb-0">
+                    Work together with your team to create and refine moodboards collaboratively.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-5 bg-primary text-white">
+        <div className="container text-center">
+          <div className="row justify-content-center">
+            <div className="col-lg-8">
+              <h2 className="display-6 fw-bold mb-3">
+                Ready to Start Creating?
+              </h2>
+              <p className="lead mb-4">
+                Join thousands of creatives who use our platform to organize 
+                and share their visual inspiration. Start building your first 
+                moodboard today!
+              </p>
+              {!user && (
+                <div className="d-flex gap-3 justify-content-center flex-wrap">
+                  <Link to="/register">
+                    <Button size="lg" className="btn-warning text-dark fw-semibold">
+                      <Sparkles className="me-2" size={20} />
+                      Create Free Account
+                    </Button>
+                  </Link>
+                  <Link to="/login">
+                    <Button variant="outline" size="lg" className="!bg-transparent !hover:bg-transparent border-white text-white">
+                      Sign In
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-dark text-white py-4">
+        <div className="container">
+          <div className="row align-items-center">
+            <div className="col-md-6">
+              <div className="d-flex align-items-center">
+                <Grid className="me-2" size={20} />
+                <span className="fw-bold">Moodboard</span>
+              </div>
+              <p className="text-muted mb-0 mt-2">
+                Create, organize, and share your visual inspiration.
+              </p>
+            </div>
+            <div className="col-md-6 text-md-end">
+              <p className="text-muted mb-0">
+                © 2024 Moodboard App. Built with React, TypeScript & Bootstrap.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
